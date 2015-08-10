@@ -58,19 +58,13 @@ func timeIntervalForDuration(duration:DurationComponents) -> NSTimeInterval
   return NSTimeInterval(totalSecs)
 }
 
-let durations = [
-  (seconds:0, minutes: 0, hours: 0, days: 0, weeks: 0),
-  (seconds:1, minutes: 0, hours: 0, days: 0, weeks: 0),
-  (seconds:10, minutes: 0, hours: 0, days: 0, weeks: 0),
-  (seconds:0, minutes: 1, hours: 0, days: 0, weeks: 0),
-  (seconds:0, minutes: 10, hours: 0, days: 0, weeks: 0),
-  (seconds:0, minutes: 0, hours: 1, days: 0, weeks: 0),
-  (seconds:0, minutes: 0, hours: 10, days: 0, weeks: 0),
-  (seconds:0, minutes: 0, hours: 0, days: 1, weeks: 0),
-  (seconds:0, minutes: 0, hours: 0, days: 10, weeks: 0),
-  (seconds:0, minutes: 0, hours: 0, days: 10, weeks: 1),
-  (seconds:10, minutes: 20, hours: 5, days: 3, weeks: 2),
-]
+func intervalsFromPositiveDurations(durations:[DurationComponents]) -> [NSTimeInterval]
+{
+  let positiveIntervals = durations.map(timeIntervalForDuration)
+  let negativeIntervals = positiveIntervals.reverse().map({-1 * $0})
+  let allIntervals = negativeIntervals + positiveIntervals
+  return allIntervals
+}
 
 extension String {
   func leftPadTo(requiredCharCount:Int) -> String {
@@ -89,26 +83,37 @@ func printRow(ss:NSTimeInterval) -> String
   return s
 }
 
-let positiveIntervals = durations.map(timeIntervalForDuration)
-let negativeIntervals = positiveIntervals.reverse().map({-1 * $0})
-let allIntervals = negativeIntervals + positiveIntervals
-
-func printTableFromIntervals(intervals:[NSTimeInterval]) -> NSAttributedString {
+func printTableFromIntervals(intervals:[NSTimeInterval]) -> NSAttributedString
+{
   let result = "\n".join(intervals.map(printRow))
-  return result.monotypeAttributedString()
+  return monotypeAttributedStringFromString(result)
 }
 
-extension String {
-  func monotypeAttributedString() -> NSAttributedString
-  {
-    let fontCourierNew = UIFont(descriptor: UIFontDescriptor(fontAttributes:[
-      UIFontDescriptorFamilyAttribute:"Courier New",
-      UIFontWeightTrait:0]),
-      size: 14)
-    let attrString = NSAttributedString(string: self, attributes: [NSFontAttributeName:fontCourierNew])
-    return attrString
-  }
+func monotypeAttributedStringFromString(s:String) -> NSAttributedString
+{
+  let fontCourierNew = UIFont(descriptor: UIFontDescriptor(fontAttributes:[
+    UIFontDescriptorFamilyAttribute:"Courier New",
+    UIFontWeightTrait:0]),
+    size: 14)
+  let attrString = NSAttributedString(string: s, attributes: [NSFontAttributeName:fontCourierNew])
+  return attrString
 }
+
+let durations = [
+  (seconds:0, minutes: 0, hours: 0, days: 0, weeks: 0),
+  (seconds:1, minutes: 0, hours: 0, days: 0, weeks: 0),
+  (seconds:10, minutes: 0, hours: 0, days: 0, weeks: 0),
+  (seconds:0, minutes: 1, hours: 0, days: 0, weeks: 0),
+  (seconds:0, minutes: 10, hours: 0, days: 0, weeks: 0),
+  (seconds:0, minutes: 0, hours: 1, days: 0, weeks: 0),
+  (seconds:0, minutes: 0, hours: 10, days: 0, weeks: 0),
+  (seconds:0, minutes: 0, hours: 0, days: 1, weeks: 0),
+  (seconds:0, minutes: 0, hours: 0, days: 10, weeks: 0),
+  (seconds:0, minutes: 0, hours: 0, days: 10, weeks: 1),
+  (seconds:10, minutes: 20, hours: 5, days: 3, weeks: 2),
+]
+
+let allIntervals = intervalsFromPositiveDurations(durations)
 
 printTableFromIntervals(allIntervals)
 
