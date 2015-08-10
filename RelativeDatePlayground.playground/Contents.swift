@@ -91,9 +91,8 @@ func printTableFromIntervals(intervals:[NSTimeInterval]) -> NSAttributedString
 
 func monotypeAttributedStringFromString(s:String) -> NSAttributedString
 {
-  let fontCourierNew = UIFont(descriptor: UIFontDescriptor(fontAttributes:[
-    UIFontDescriptorFamilyAttribute:"Courier New",
-    UIFontWeightTrait:0]),
+  let fontCourierNew = UIFont(
+    descriptor: UIFontDescriptor(fontAttributes:[UIFontDescriptorFamilyAttribute:"Courier New",UIFontWeightTrait:0]),
     size: 14)
   let attrString = NSAttributedString(string: s, attributes: [NSFontAttributeName:fontCourierNew])
   return attrString
