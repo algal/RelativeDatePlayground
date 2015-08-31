@@ -10,11 +10,13 @@ import UIKit
 The purpose of this playground is to assess whether NSDateComponentFormatter is a suitable replacement for TTTTimeIntervalFormatter.
 
 Requirements:
+
 - generates short, colloquial descriptions of a moment relative to the present
 - must handle past as well as future moments
 - basically, must be suitable for use in UIs describing timelines of past events
 
 Conclusion:
+
 NSDateComponentFormatter is inadequate, as of iOS9, for two reasons:
 - only handles positive intervals not negative intervals!
 - does not colloquialize values of 0 or near 0
@@ -69,8 +71,7 @@ func intervalsFromPositiveDurations(durations:[DurationComponents]) -> [NSTimeIn
 extension String {
   func leftPadTo(requiredCharCount:Int) -> String {
     let missingSpaces = max(0,requiredCharCount - self.characters.count)
-    let padding = Repeat(count: missingSpaces, repeatedValue: " ").reduce("", combine: +)
-    return padding + self
+    return Repeat(count: missingSpaces, repeatedValue: " ").reduce(self, combine: {$1 + $0})
   }
 }
 
@@ -85,7 +86,7 @@ func printRow(ss:NSTimeInterval) -> String
 
 func printTableFromIntervals(intervals:[NSTimeInterval]) -> NSAttributedString
 {
-  let result = "\n".join(intervals.map(printRow))
+  let result = intervals.map(printRow).joinWithSeparator("\n")
   return monotypeAttributedStringFromString(result)
 }
 
@@ -98,7 +99,7 @@ func monotypeAttributedStringFromString(s:String) -> NSAttributedString
   return attrString
 }
 
-let durations = [
+let positiveDurations = [
   (seconds:0, minutes: 0, hours: 0, days: 0, weeks: 0),
   (seconds:1, minutes: 0, hours: 0, days: 0, weeks: 0),
   (seconds:10, minutes: 0, hours: 0, days: 0, weeks: 0),
@@ -112,9 +113,10 @@ let durations = [
   (seconds:10, minutes: 20, hours: 5, days: 3, weeks: 2),
 ]
 
-let allIntervals = intervalsFromPositiveDurations(durations)
+let allIntervals = intervalsFromPositiveDurations(positiveDurations)
 
 printTableFromIntervals(allIntervals)
+
 
 
 

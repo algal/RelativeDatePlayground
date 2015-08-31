@@ -7,6 +7,7 @@ Short answer: no.
 Long answer: No, most obviously because NSDateComponentsFormatter doesn't handle past moments at all and doesn't format the present moment into a colloquial phrase. In addition, TTTTimeIntervalFormatter is configurable in various ways.
 
 This table shows the issues:
+
 ```
    SECONDS |  TTTTimeIntervalFormatter |  NSDateComponentsFormatter
 -----------+---------------------------+---------------------------
