@@ -3,7 +3,7 @@
 import UIKit
 
 
-// Swift 2.0
+// known-good: Swift 3.0, Xcode 8.0
 
 /*
 
@@ -29,41 +29,41 @@ TTTTimeIntervalFormattea is distributed in Mattt Thompson's FormatterKit library
 
 import TTTTimeIntervalFormatter
 
-extension NSDateComponentsFormatter {
-  class func idiomaticPhraseFormatter() -> NSDateComponentsFormatter {
-    let f =  NSDateComponentsFormatter()
-    f.unitsStyle = .Full
+extension DateComponentsFormatter {
+  class func idiomaticPhraseFormatter() -> DateComponentsFormatter {
+    var f =  DateComponentsFormatter()
+    f.unitsStyle = .full
     f.includesApproximationPhrase = false
     f.includesTimeRemainingPhrase = true
     f.maximumUnitCount = 1
-    f.allowedUnits = [.Second, .Minute, .Hour, .Day, .WeekOfMonth , .Month, .Year]
+    f.allowedUnits = [.second, .minute, .hour, .day, .weekOfMonth , .month, .year]
     return f
   }
 }
 
 let formatterKitFormatter = TTTTimeIntervalFormatter()
-let cocoaIdiomaticFormatter =  NSDateComponentsFormatter.idiomaticPhraseFormatter()
+let cocoaIdiomaticFormatter =  DateComponentsFormatter.idiomaticPhraseFormatter()
 
 typealias DurationComponents = (seconds:Int,minutes:Int,hours:Int,days:Int,weeks:Int)
 
-func timeIntervalForDuration(duration:DurationComponents) -> NSTimeInterval
+func timeIntervalForDuration(duration:DurationComponents) -> TimeInterval
 {
   let (seconds,minutes,hours,days,weeks) = duration
   struct Constants  {
-    static let timeUnitsAccum = (1...5).map( { [1,60,60,24,7][0..<($0)].reduce(1, combine: *) } )
+    static let timeUnitsAccum = (1...5).map( { [1,60,60,24,7][0..<($0)].reduce(1, *) } )
   }
   
   let pairs = zip([seconds,minutes,hours,days,weeks], Constants.timeUnitsAccum)
   let totalSecs = pairs.reduce(0) { (total:Int, p:(Int,Int)) -> Int in
     return total + p.0 * p.1
   }
-  return NSTimeInterval(totalSecs)
+  return TimeInterval(totalSecs)
 }
 
-func intervalsFromPositiveDurations(durations:[DurationComponents]) -> [NSTimeInterval]
+func intervalsFromPositiveDurations(durations:[DurationComponents]) -> [TimeInterval]
 {
   let positiveIntervals = durations.map(timeIntervalForDuration)
-  let negativeIntervals = positiveIntervals.reverse().map({-1 * $0})
+  let negativeIntervals = positiveIntervals.reversed().map({-1 * $0})
   let allIntervals = negativeIntervals + positiveIntervals
   return allIntervals
 }
@@ -71,23 +71,23 @@ func intervalsFromPositiveDurations(durations:[DurationComponents]) -> [NSTimeIn
 extension String {
   func leftPadTo(requiredCharCount:Int) -> String {
     let missingSpaces = max(0,requiredCharCount - self.characters.count)
-    return Repeat(count: missingSpaces, repeatedValue: " ").reduce(self, combine: {$1 + $0})
+    return repeatElement(" ", count: missingSpaces).reduce(self,{$1 + $0})
   }
 }
 
-func printRow(ss:NSTimeInterval) -> String
+func printRow(ss:TimeInterval) -> String
 {
-  let timeDouble = NSNumber(double: Double(ss)).description.leftPadTo(20)
-  let fkString = formatterKitFormatter.stringForTimeInterval(ss).leftPadTo(25)
-  let cocoaString  = (cocoaIdiomaticFormatter.stringFromTimeInterval(ss) ?? "nil").leftPadTo(25)
+  let timeDouble = NSNumber(value: Double(ss)).description.leftPadTo(requiredCharCount: 20)
+  let fkString = formatterKitFormatter.string(forTimeInterval: ss).leftPadTo(requiredCharCount: 25)
+  let cocoaString  = (cocoaIdiomaticFormatter.string(from: ss) ?? "nil").leftPadTo(requiredCharCount: 25)
   let s = String(format: "%@ | %@ | %@", timeDouble, fkString, cocoaString)
   return s
 }
 
-func printTableFromIntervals(intervals:[NSTimeInterval]) -> NSAttributedString
+func printTableFromIntervals(intervals:[TimeInterval]) -> NSAttributedString
 {
-  let result = intervals.map(printRow).joinWithSeparator("\n")
-  return monotypeAttributedStringFromString(result)
+  let result = intervals.map(printRow).joined(separator: "\n")
+  return monotypeAttributedStringFromString(s: result)
 }
 
 func monotypeAttributedStringFromString(s:String) -> NSAttributedString
@@ -113,9 +113,9 @@ let positiveDurations = [
   (seconds:10, minutes: 20, hours: 5, days: 3, weeks: 2),
 ]
 
-let allIntervals = intervalsFromPositiveDurations(positiveDurations)
+let allIntervals = intervalsFromPositiveDurations(durations: positiveDurations)
 
-printTableFromIntervals(allIntervals)
+printTableFromIntervals(intervals: allIntervals)
 
 
 
